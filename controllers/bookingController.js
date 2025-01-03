@@ -2,7 +2,7 @@ const Booking = require("../models/Booking");
 
 exports.bookSlot = async (req, res) => {
   try {
-    const { date, time, guest, contact,name } = req.body;
+    const { date, time, guest, contact, name } = req.body;
 
     const existingBooking = await Booking.findOne({ date, time });
     if (existingBooking && existingBooking.booked) {
@@ -34,8 +34,10 @@ exports.bookSlot = async (req, res) => {
 
 exports.getBookedSlots = async (req, res) => {
   try {
-    const bookings = await Booking.find({ booked: true });
+    let bookings = await Booking.find({ booked: true });
+    bookings = bookings.reverse();
     res.status(200).json({
+      message: "booking fetched successfully",
       success: true,
       bookings,
     });
@@ -50,7 +52,9 @@ exports.getBookedSlots = async (req, res) => {
 
 exports.getAvailableSlots = async (req, res) => {
   try {
-    const availableSlots = await Booking.find({ booked: false });
+    const availableSlots = await Booking.find({ booked: false }).select(
+      "time date"
+    );
     res.status(200).json({
       success: true,
       availableSlots,
